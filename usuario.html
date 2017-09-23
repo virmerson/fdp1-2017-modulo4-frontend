@@ -20,7 +20,7 @@
                 {{ usuario.id }} 
                 {{ usuario.nome }} 
                 {{ usuario.senha }} 
-                {{ usuario.perfil.descricao }} 
+              
             </li>
             
         </ol>
@@ -33,31 +33,17 @@
         var app = new Vue({
             el: "#app",
             data: {
-               usuarios: [
-               {
-                    id: "100",
-                    nome: "Virmerson",
-                    senha: "123",
-                        perfil: {
-                            descricao: "ADMIN"
-                        }
-                    },
-                    {
-                    id: "101",
-                    nome: "Jão",
-                    senha: "1243",
-                        perfil: {
-                            descricao: "ZÉ ROELA"
-                        }
-                    
-                    }
-
-               ]
+               usuarios:[]
             }, 
 
             created:function (){
 
-               
+                this.$http.get ("http://localhost:8080/usucontroller").then(function (response){
+                    this.usuarios=response.body;
+                }, function (response){
+                    console.log("nao funcionou")
+                })    
+                
             }
 
 
