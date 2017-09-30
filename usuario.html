@@ -4,51 +4,116 @@
 
 <head>
 
-    
-        <script src="https://unpkg.com/vue"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.4"></script>
-    
+
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.4"></script>
+
 </head>
 
 <body>
 
     <div id="app">
-       
+
+        <form>
+            <label> Nome </label>
+            <input type="text" v-model="usuario.nome">
+
+            <label> Senha  </label>
+            <input type="password" v-model="usuario.senha">
+
+            <button type="button" v-on:click="salvar"> Salvar</button>
+
+        </form>
+
         <ol>
 
-            <li v-for="usuario in usuarios">  
-                {{ usuario.id }} 
-                {{ usuario.nome }} 
-                {{ usuario.senha }} 
-              
+            <li style="list-style-type: none" v-for="usuario in usuarios">
+
+                {{ usuario.id}} | {{ usuario.nome }} {{ usuario.senha }}
+
+                <button type="button" v-on:click="excluir(usuario)"> Excluir </button>
+                <button type="button" v-on:click="alterar(usuario)"> Alterar </button>
+
             </li>
-            
+
         </ol>
-   
+
     </div>
 
 </body>
 
 <script>
-        var app = new Vue({
-            el: "#app",
-            data: {
-               usuarios:[]
+    var app = new Vue({
+        el: "#app",
+        data: {
+            usuarios: [],
+            usuario: {id:'',  nome: '', senha: '' }
+        },
+
+        created: function () {
+
+            this.$http.get("http://localhost:8080/usucontroller").then(function (response) {
+                this.usuarios = response.body;
+            }, function (response) {
+                console.log("nao funcionou")
+            })
+
+        },
+
+        methods: {
+
+            salvar: function () {
+               
+               if (this.usuario.id==""){
+               
+                    this.$http.post("http://localhost:8080/usucontroller", this.usuario).then(function (response) {
+                        this.usuarios.push(response.body);
+                    }, function (response) {
+                        console.log("nao funcionou")
+                    })
+               }else {
+
+                    this.$http.put("http://localhost:8080/usucontroller", this.usuario).then(function (response) {
+                        //this.usuarios.push(response.body);
+                    }, function (response) {
+                        console.log("nao funcionou")
+                    })
+               }
+
+            },
+
+            excluir: function (usuarioExcluir) {
+                if (window.confirm("Tem Certeza que deseja remover o usuário " + usuarioExcluir.nome + "? " )){
+                    this.$http.delete("http://localhost:8080/usucontroller/" + usuarioExcluir.id).then(function (response) {
+
+                        var indice = this.usuarios.indexOf(usuarioExcluir);
+                        //Remover do Vetor
+                        this.usuarios.splice(indice, 1);
+
+                    }, function (response) {
+                        console.log("nao funcionou")
+                    })
+
+                }
+
             }, 
 
-            created:function (){
 
-                this.$http.get ("http://localhost:8080/usucontroller").then(function (response){
-                    this.usuarios=response.body;
-                }, function (response){
-                    console.log("nao funcionou")
-                })    
-                
+            alterar: function (usuarioAlterar) {
+               
+                  this.usuario = Vue.util.extend({}, usuarioAlterar);  
+
             }
 
+        }
 
 
-        });
-    </script>
+
+
+
+
+    });
+
+</script>
 
 </html>
