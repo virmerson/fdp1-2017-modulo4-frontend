@@ -21,6 +21,7 @@
             <label> Senha  </label>
             <input type="password" v-model="usuario.senha">
 
+            <button type="button" v-on:click="novo"> Novo</button>
             <button type="button" v-on:click="salvar"> Salvar</button>
 
         </form>
@@ -74,7 +75,14 @@
                }else {
 
                     this.$http.put("http://localhost:8080/usucontroller", this.usuario).then(function (response) {
-                        //this.usuarios.push(response.body);
+                       
+                        index = this.usuarios.indexOf(this.usuarioAlterar);
+
+
+                         this.usuarios.splice(index, 1, response.body)   
+                      
+
+                        
                     }, function (response) {
                         console.log("nao funcionou")
                     })
@@ -100,9 +108,15 @@
 
 
             alterar: function (usuarioAlterar) {
-               
+                this.usuarioAlterar = usuarioAlterar;
                   this.usuario = Vue.util.extend({}, usuarioAlterar);  
 
+            }
+
+            , 
+
+            novo:function (){
+                this.usuario= {id:'',  nome: '', senha: '' }
             }
 
         }
