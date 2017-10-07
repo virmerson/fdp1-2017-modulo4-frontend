@@ -21,6 +21,12 @@
             <label> Senha  </label>
             <input type="password" v-model="usuario.senha">
 
+            <select v-model="usuario.perfil">
+                <option disabled> .:Escolha:. </option>
+                <option v-for="p in perfis"  v-bind:value="p">  {{p.descricao}} </option>
+                
+            </select>
+
             <button type="button" v-on:click="novo"> Novo</button>
             <button type="button" v-on:click="salvar"> Salvar</button>
 
@@ -30,7 +36,7 @@
 
             <li style="list-style-type: none" v-for="usuario in usuarios">
 
-                {{ usuario.id}} | {{ usuario.nome }} {{ usuario.senha }}
+                {{ usuario.id}} | {{ usuario.nome }} {{ usuario.perfil.descricao }}
 
                 <button type="button" v-on:click="excluir(usuario)"> Excluir </button>
                 <button type="button" v-on:click="alterar(usuario)"> Alterar </button>
@@ -48,13 +54,22 @@
         el: "#app",
         data: {
             usuarios: [],
-            usuario: {id:'',  nome: '', senha: '' }
+            usuario: {id:'',  nome: '', senha: '' },
+
+            perfis: []
         },
 
         created: function () {
 
             this.$http.get("http://localhost:8080/usucontroller").then(function (response) {
                 this.usuarios = response.body;
+            }, function (response) {
+                console.log("nao funcionou")
+            })
+
+
+            this.$http.get("http://localhost:8080/perfilcontroller").then(function (response) {
+                this.perfis = response.body;
             }, function (response) {
                 console.log("nao funcionou")
             })
